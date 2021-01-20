@@ -1,0 +1,305 @@
+@import '~antd/lib/style/themes/default.less';
+
+.Header {
+  z-index: 9;
+  padding: 0;
+
+  :global {
+    .ant-pro-global-header {
+      box-shadow: 0 1px 3px @shadow-color;
+
+      .anticon {
+        &:hover {
+          color: @primary-color;
+        }
+      }
+    }
+  }
+}
+
+.Chosen {
+  color: @primary-color;
+}
+
+.Disabled {
+  color: @disabled-color;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.Menu {
+  z-index: 1;
+  width: 48px;
+  border-right: none;
+  box-shadow: 1px 0 3px 0 @shadow-color !important;
+
+  :global {
+    .ant-menu-item {
+      padding: 0 16px;
+    }
+  }
+}
+
+.Components,
+.Code {
+  z-index: 1;
+  overflow: hidden;
+  background-color: @popover-background;
+  box-shadow: 1px 0 3px 0 @shadow-color;
+}
+
+.Components {
+  :global {
+    .ant-layout-sider-children {
+      padding: 20px 0;
+      overflow-y: auto;
+
+      & > .searchbox {
+        margin-bottom: 10px;
+        padding: 0 20px;
+      }
+    }
+
+    .ant-form-item {
+      margin-bottom: 0;
+      padding: 12px 20px;
+      background-color: @popover-background;
+      border: 2px solid @popover-background;
+      cursor: move !important;
+
+      &:hover {
+        border: 2px dashed @popover-customize-border-color;
+      }
+      &:active {
+        border: 2px solid @popover-background;
+      }
+      * {
+        cursor: move !important;
+      }
+
+      .ant-form-item-control {
+        pointer-events: none;
+      }
+    }
+
+    // .ant-form-item-label {
+    //   &:hover {
+    //     cursor: move !important;
+    //   }
+
+    //   label {
+    //     cursor: move !important;
+    //   }
+    // }
+
+    // .sortable-chosen,
+    // .sortable-ghost {
+    //   background-color: @primary-color;
+    // }
+  }
+}
+
+.Main {
+  background-color: @component-background;
+
+  :global {
+    .ant-form {
+      height: 100%;
+
+      .ant-form-item {
+        margin-bottom: 0;
+        padding: 12px 20px;
+        background-color: @component-background;
+        border: 2px solid @component-background;
+      }
+    }
+  }
+}
+
+// .Main[data-mode='edit'] {
+//   :global {
+//     .ant-form {
+//       height: initial;
+//       min-height: 100%;
+//       padding-bottom: 56px;
+
+//       .ant-form-item {
+//         border: none;
+
+//         // &:last-child {
+//         //   position: absolute;
+//         //   right: 0;
+//         //   bottom: 0;
+//         //   left: 0;
+//         //   box-shadow: 0 -1px 3px 0 @shadow-color;
+//         // }
+//       }
+//     }
+//   }
+// }
+
+.SortableBox {
+  height: 100%;
+
+  :global {
+    .ant-form-item {
+      margin-bottom: 0;
+      padding: 12px 20px;
+      background-color: @component-background;
+      border: 2px solid @component-background;
+      cursor: move !important;
+
+      * {
+        cursor: move !important;
+      }
+
+      &.sform-item-chosen {
+        border-color: @primary-color;
+        &:active {
+          border-color: @component-background;
+        }
+      }
+
+      .ant-form-item-control {
+        pointer-events: none;
+      }
+    }
+
+    .ant-form-item:not([draggable='true']):not(.sform-item-chosen) {
+      &:hover {
+        border: 2px dashed @popover-customize-border-color;
+      }
+      &:active {
+        border: 2px solid @component-background;
+      }
+    }
+
+    // .ant-form-item-label {
+    //   &:hover {
+    //     cursor: move !important;
+    //   }
+
+    //   label {
+    //     cursor: move !important;
+    //   }
+    // }
+
+    // .sortable-chosen,
+    .sortable-ghost {
+      background-color: @primary-color;
+    }
+
+    .ant-form-item-hidden {
+      position: relative;
+      display: block;
+
+      &::before {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        font-size: 20px;
+        line-height: 43px;
+        background-color: @component-background;
+        opacity: 0.8;
+        content: '隐藏字段';
+      }
+    }
+  }
+}
+
+.Setting {
+  z-index: 1;
+  overflow: hidden;
+  background-color: @popover-background;
+  box-shadow: -1px 0 3px 0 @shadow-color;
+
+  :global {
+    button[id='del'],
+    button[id='copy'] {
+      margin-bottom: 20px;
+    }
+
+    .ant-card-small {
+      .ant-card-extra {
+        // position: absolute;
+        // right: 8px;
+        // top: 0;
+        // font-size: 12px;
+        // z-index: 1;
+
+        &:hover {
+          color: @error-color;
+        }
+      }
+      .ant-tabs-tab {
+        margin: 0 16px 0 0;
+
+        .ant-tabs-tab-btn {
+          font-weight: normal;
+        }
+      }
+    }
+    .ant-layout-sider-children {
+      // padding-bottom: 56px;
+      // overflow-y: auto;
+
+      .ant-form {
+        height: 100%;
+        .ant-card {
+          height: 100%;
+          .ant-card-body {
+            height: 100%;
+            padding-bottom: 76px;
+            overflow-y: auto;
+          }
+        }
+        .ant-form-item {
+          margin-bottom: 0;
+          background-color: @popover-background;
+
+          // &:last-child {
+          //   position: absolute;
+          //   bottom: 0;
+          //   left: 0;
+          //   right: 0;
+          //   box-shadow: 0px -1px 3px 0px @shadow-color;
+          // }
+
+          // p {
+          //   margin-bottom: 0;
+          // }
+        }
+      }
+    }
+  }
+}
+
+.Fullscreen {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 999;
+
+  :global {
+    .ant-layout {
+      min-height: 0;
+    }
+  }
+}
+
+.Normalscreen {
+  :global {
+    .ant-layout-sider-collapsed {
+      height: 0;
+    }
+  }
+}

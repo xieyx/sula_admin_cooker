@@ -1,0 +1,14 @@
+.list {
+  :global {
+    th,
+    td {
+      max-width: 200px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    th:not(.ant-table-cell-fix-right),
+    td:not(.ant-table-cell-fix-right) {
+      overflow: hidden;
+    }
+  }
+}
