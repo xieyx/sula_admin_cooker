@@ -124,7 +124,7 @@ const Form: React.FC<DrawerFormProps> = ({
     if (setHistory) {
       setHistory(history);
     }
-  }, [setHistory]);
+  }, [list]);
 
   const onFinish = (values: any) => {
     // eslint-disable-next-line no-console
