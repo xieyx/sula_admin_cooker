@@ -48,8 +48,13 @@ export default defineConfig({
   ignoreMomentLocale: true,
   proxy: proxy[REACT_APP_ENV || 'dev'],
   manifest: {
-    basePath: '/',
+    basePath: '/admin_cooker/',
   },
+  history: {
+    type: 'hash',
+  },
+  base: '/',
+  publicPath: '/admin_cooker/',
   chainWebpack(config) {
     config.plugin('monaco-editor').use(MonacoWebpackPlugin);
   },
