@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Tabs } from 'antd';
+import { Affix, Tabs } from 'antd';
 import { useHistory, useLocation, useIntl, useAliveController } from 'umi';
 import styles from './tabs.less';
 
@@ -15,8 +15,11 @@ const KeepAliveTabs: React.FC<{ tabBarExtraContent?: React.ReactNode }> = ({
 
   useEffect(() => {
     setActiveKey(
-      cachingNodes?.filter((node: any) => node.name.split('|').pop() === location.pathname)?.pop()
-        ?.name,
+      cachingNodes
+        ?.filter(
+          (node: any) => node.name.split('|').pop() === `${location.pathname}${location.search}`,
+        )
+        ?.pop()?.name,
     );
   }, [cachingNodes]);
 
@@ -53,28 +56,29 @@ const KeepAliveTabs: React.FC<{ tabBarExtraContent?: React.ReactNode }> = ({
   };
 
   return (
-    <Tabs
-      className={styles.Tabs}
-      type="editable-card"
-      hideAdd
-      onEdit={handleEdit}
-      onTabClick={handleTabClick}
-      tabBarExtraContent={tabBarExtraContent}
-      // Todo
-      activeKey={activeKey}
-    >
-      {cachingNodes.map((node: any) => {
-        const [route] = node.name.split('|');
-        const pathSnippets = route.split(/\/(?!:[^:/]+)/).filter((i: string) => i);
-        const tab = intl.formatMessage({
-          id: `menu.${pathSnippets
-            .slice(0, pathSnippets.length)
-            .join('.')
-            .replace(/\/:[^:/.]+/g, '')}`,
-        });
-        return <Tabs.TabPane key={node.name} tab={tab} />;
-      })}
-    </Tabs>
+    <Affix offsetTop={0} className={styles.Affix}>
+      <Tabs
+        className={styles.Tabs}
+        type="editable-card"
+        hideAdd
+        onEdit={handleEdit}
+        onTabClick={handleTabClick}
+        tabBarExtraContent={tabBarExtraContent}
+        activeKey={activeKey}
+      >
+        {cachingNodes.map((node: any) => {
+          const [route] = node.name.split('|');
+          const pathSnippets = route.split(/\/(?!:[^:/]+)/).filter((i: string) => i);
+          const tab = intl.formatMessage({
+            id: `menu.${pathSnippets
+              .slice(0, pathSnippets.length)
+              .join('.')
+              .replace(/\/:[^:/.]+/g, '')}`,
+          });
+          return <Tabs.TabPane key={node.name} tab={tab} />;
+        })}
+      </Tabs>
+    </Affix>
   );
 };
 
