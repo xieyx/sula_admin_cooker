@@ -96,10 +96,10 @@ const Setting: React.FC<SettingProps> = ({
     formRef.current.resetFields();
     const [updatedFieldProps, updatedFormItemProps] = getUpdatedSetting(currentFieldSetting, id);
     formRef.current.setFieldsValue({
-      'Form.Item': pickBy({ ...defaultBasic, ...updatedFormItemProps }, (value) => {
+      'Form.Item': pickBy({ ...defaultBasic, ...updatedFormItemProps }, (value: any) => {
         return value !== undefined && value !== null;
       }),
-      [componentType]: pickBy({ ...defaultProps, ...updatedFieldProps }, (value) => {
+      [componentType]: pickBy({ ...defaultProps, ...updatedFieldProps }, (value: any) => {
         return value !== undefined && value !== null;
       }),
     });
@@ -109,10 +109,10 @@ const Setting: React.FC<SettingProps> = ({
     formRef.current.resetFields();
     const [updatedFieldProps, updatedFormItemProps] = getUpdatedSetting(currentFieldSetting, id);
     formRef.current.setFieldsValue({
-      'Form.Item': pickBy({ ...defaultBasic, ...updatedFormItemProps }, (value) => {
+      'Form.Item': pickBy({ ...defaultBasic, ...updatedFormItemProps }, (value: any) => {
         return value !== undefined && value !== null;
       }),
-      [componentType]: pickBy({ ...defaultProps, ...updatedFieldProps }, (value) => {
+      [componentType]: pickBy({ ...defaultProps, ...updatedFieldProps }, (value: any) => {
         return value !== undefined && value !== null;
       }),
     });

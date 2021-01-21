@@ -73,11 +73,11 @@ const SinaS3Upload: React.FC<Record<string, any>> = ({
     if (onChange) {
       const normalized = normalizedFileList(info, slice);
       if (isArray(normalized) && normalized.length) {
-        const urlArr = normalized.map((row) => {
+        const urlArr = normalized.map((row: any) => {
           return row.url || undefined;
         });
 
-        onChange(urlArr.filter((r) => r !== undefined).join(','));
+        onChange(urlArr.filter((r: any) => r !== undefined).join(','));
       } else {
         onChange(undefined);
       }

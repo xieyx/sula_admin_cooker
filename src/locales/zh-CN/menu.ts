@@ -51,4 +51,5 @@ export default {
   'menu.editor.koni': '拓扑编辑器',
   'menu.list.edit': '表单编辑器',
   'menu.list.create': '表单编辑器',
+  'menu.list.info': '表单',
 };

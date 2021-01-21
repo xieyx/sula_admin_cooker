@@ -30,6 +30,17 @@ const RowList: React.FC = () => {
             key: 'id',
             title: 'ID',
             dataIndex: 'id',
+            render: (text: string) => (
+              <Button
+                type="link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  history.push(`/list/info?id=${text}`);
+                }}
+              >
+                {text}
+              </Button>
+            ),
           },
           {
             key: 'action',

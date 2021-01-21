@@ -1,5 +1,11 @@
 ﻿export default [
   {
+    path: '/list/info',
+    name: 'form',
+    hideInMenu: true,
+    component: './row/save',
+  },
+  {
     path: '/list/edit',
     name: 'form',
     hideInMenu: true,
