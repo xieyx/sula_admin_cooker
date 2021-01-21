@@ -1,11 +1,9 @@
-import { ItemInterface } from 'react-sortablejs';
+import type { ItemInterface } from 'react-sortablejs';
 
-export interface SortableItem extends ItemInterface {
+export type SortableItem = {
   id: number;
   name: string;
   props?: FieldProps;
-}
+} & ItemInterface;
 
-export interface FieldProps {
-  [propName: string]: any;
-}
+export type FieldProps = Record<string, any>;

@@ -21,7 +21,7 @@ import {
   RollbackOutlined,
 } from '@ant-design/icons';
 import MonacoEditor from 'react-monaco-editor';
-import type { FormItemProps} from './Form.d';
+import type { FormItemProps } from './Form.d';
 import { createId } from './Form.d';
 import Components from './Components';
 import Form from './Form';
@@ -33,7 +33,7 @@ export type WorkspaceProps = {
   componentName?: string;
   componentChildren?: React.ReactNode;
   [propName: string]: any;
-}
+};
 
 const Workspace: React.FC<WorkspaceProps> = ({ id, saveForm, getForm }) => {
   const [codeForm] = AForm.useForm();
@@ -320,11 +320,11 @@ const Workspace: React.FC<WorkspaceProps> = ({ id, saveForm, getForm }) => {
                   selectOnLineNumbers: true,
                   roundedSelection: false,
                   readOnly: false,
-                  cursorStyle: "line",
+                  cursorStyle: 'line',
                   automaticLayout: true,
                   minimap: {
                     enabled: false,
-                  }
+                  },
                 }}
                 // value={code}
                 // options={options}

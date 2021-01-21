@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form } from 'sula';
 import pickBy from 'lodash/pickBy';
 import { CloseOutlined, DeleteOutlined, CopyOutlined } from '@ant-design/icons';
-import { FormItemProps } from './Form.d';
+import type { FormItemProps } from './Form.d';
 import ComponentProps from './ComponentProps';
 import HelpButton from '../HelpButton';
 
@@ -49,7 +49,7 @@ const getUpdatedSetting = (currentFieldSetting?: FormItemProps, fieldId?: number
   return [fieldProps, formItemProps];
 };
 
-export interface SettingProps {
+export type SettingProps = {
   id?: number;
   componentName?: string;
   componentChildren?: React.ReactNode;
@@ -58,7 +58,7 @@ export interface SettingProps {
   setDeletedField?: (id: number) => void;
   openCode?: (visible: boolean) => void;
   [propName: string]: any;
-}
+};
 
 export declare type TabType = 'form' | 'basic' | 'field' | 'pro';
 

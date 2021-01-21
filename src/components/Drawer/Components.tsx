@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Form } from 'sula';
 import type { Sortable } from 'react-sortablejs';
-import type { FormProps, CustomComponentProps} from './Form.d';
+import type { FormProps, CustomComponentProps } from './Form.d';
 import { dragDefs, CustomComponentsDefault } from './Form.d';
 
 const Components: React.FC<FormProps> = ({ sortableProps }) => {
-  const [ conponents, setComponents ] = useState<CustomComponentProps[]>([]);
+  const [conponents, setComponents] = useState<CustomComponentProps[]>([]);
 
   const setFilterTypes = (newState: CustomComponentProps[], sortable: Sortable | null = null) => {
     setComponents(sortable === null ? dragDefs(newState) : newState);

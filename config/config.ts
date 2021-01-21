@@ -50,12 +50,19 @@ export default defineConfig({
   manifest: {
     basePath: '/',
   },
-  history: {
-    type: 'hash',
-  },
   base: '/',
   publicPath: '/',
-  chainWebpack(config) {
-    config.plugin('monaco-editor').use(MonacoWebpackPlugin);
+  chainWebpack: (memo) => {
+    // 更多配置 https://github.com/Microsoft/monaco-editor-webpack-plugin#options
+    memo.plugin('monaco-editor-webpack-plugin').use(MonacoWebpackPlugin, [
+      // 按需配置
+      { languages: ['json'] },
+    ]);
+    return memo;
   },
+  nodeModulesTransform: {
+    type: 'none',
+    exclude: [],
+  },
+  exportStatic: {},
 });

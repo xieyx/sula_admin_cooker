@@ -1,6 +1,6 @@
 ﻿export default [
   {
-    path: '/list/edit/:id',
+    path: '/list/edit',
     name: 'form',
     hideInMenu: true,
     component: './row/formbuilder',

@@ -46,9 +46,13 @@ const normalizedFileList = (fileList: any, slice?: number) => {
     : undefined;
 };
 
-const SinaS3Upload: React.FC<{
-  [propName: string]: any;
-}> = ({ onChange, listType, fileList, slice, ...props }) => {
+const SinaS3Upload: React.FC<Record<string, any>> = ({
+  onChange,
+  listType,
+  fileList,
+  slice,
+  ...props
+}) => {
   const [list, setList] = useState<any[]>();
 
   useEffect(() => {

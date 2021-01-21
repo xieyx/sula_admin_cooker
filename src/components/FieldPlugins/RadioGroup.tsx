@@ -1,9 +1,7 @@
 import React from 'react';
 import { Radio } from 'antd';
 
-const RadioGroup: React.FC<{
-  [propName: string]: any;
-}> = ({ onChange, ...props }) => {
+const RadioGroup: React.FC<Record<string, any>> = ({ onChange, ...props }) => {
   const handleChange = (e: any) => {
     if (onChange) {
       onChange(e);

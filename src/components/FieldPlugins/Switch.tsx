@@ -8,9 +8,7 @@ const isTrue = (value: any) => {
   return !!value;
 };
 
-const Switch: React.FC<{
-  [propName: string]: any;
-}> = ({ onChange, checked, ...props }) => {
+const Switch: React.FC<Record<string, any>> = ({ onChange, checked, ...props }) => {
   const handleChange = (e: any) => {
     if (onChange) {
       onChange(e);

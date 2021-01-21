@@ -4,9 +4,14 @@ import { request } from 'umi';
 import get from 'lodash/get';
 import find from 'lodash/find';
 
-const SelectSearch: React.FC<{
-  [propName: string]: any;
-}> = ({ onChange, remoteSource, value, ctx, source, ...props }) => {
+const SelectSearch: React.FC<Record<string, any>> = ({
+  onChange,
+  remoteSource,
+  value,
+  ctx,
+  source,
+  ...props
+}) => {
   const handleSearch = (e: string) => {
     ctx?.form?.setFieldSource(props.id, { reload: false, options: undefined });
     const { url, paramName, convertParams, converter, ...otherSource } = remoteSource;

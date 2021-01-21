@@ -14,13 +14,15 @@ export function dragDefs<T>(P: T[]) {
   return P.map((R: T) => ({ ...defs, ...R, id: createId() }));
 }
 
-export type FormItemProps = Record<string> & Omit<AntdFormItemProps, 'id' | 'children'> & Partial<SortableItem>
+export type FormItemProps = Record<string> &
+  Omit<AntdFormItemProps, 'id' | 'children'> &
+  Partial<SortableItem>;
 
 export type FormProps = {
   options?: FormItemProps[];
   sortable?: boolean;
   sortableProps?: omit<ReactSortableProps, 'list' | 'setList'>;
-} & AntdFormProps
+} & AntdFormProps;
 
 export type DrawerFormProps = {
   sortable?: boolean;
@@ -32,14 +34,14 @@ export type DrawerFormProps = {
   deletedField?: number;
   copiedField?: number;
   setHistory?: (list: FormItemProps[]) => void;
-} & Partial<SFormProps>
+} & Partial<SFormProps>;
 
 export type CustomComponentProps = {
   type: string;
   name: string;
   child?: CustomComponentProps[];
   [propName: string]: any;
-}
+};
 
 export const CustomComponentsDefault: CustomComponentProps[] = [
   {

@@ -1,19 +1,13 @@
 import React, { useState } from 'react';
 import { Form, registerRenderPlugin } from 'sula';
 import { ReactSortable } from 'react-sortablejs';
-import { FormItemProps, FormProps } from './Form.d';
+import type { FormItemProps, FormProps } from './Form.d';
 
 registerRenderPlugin('ReactSortable')(ReactSortable, true);
 
 const Drawer: React.FC<FormProps> = ({ sortable, sortableProps, onFinish }) => {
   const [list, setList] = useState<FormItemProps[]>([]);
-  // const onFinish = (values: any) => {
-  //   // mapValues(values, (value, key) => {
-  //   //   console.log(value, typeof value)
-  //   //   return value
-  //   // })
-  //   console.log('Received values of form: ', values);
-  // };
+
   return (
     <Form
       fields={list.map((field) => ({

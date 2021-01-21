@@ -23,7 +23,6 @@ registerRenderPlugin('Tooltip')(Tooltip);
 registerFieldPlugin('CustomSwitch')(Switch);
 registerFieldPlugin('SelectSearch')(SelectSearch, true, true);
 
-
 const { pwa } = defaultSettings;
 const isHttps = document.location.protocol === 'https:';
 
