@@ -51,7 +51,7 @@
     "sortablejs": "^1.10.2",
     "sula": "^1.0.0-beta.21",
     "umi": "^3.3.3",
-    "umi-plugin-keep-alive": "^0.0.1-beta.18",
+    "umi-plugin-keep-alive": "^0.0.1-beta.19",
     "umi-request": "^1.0.8"
   },
   "devDependencies": {
