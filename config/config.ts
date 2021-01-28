@@ -2,10 +2,7 @@
 import { defineConfig } from 'umi';
 import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
 import defaultSettings from './defaultSettings';
-import proxy from './proxy';
 import routes from './routes';
-
-const { REACT_APP_ENV } = process.env;
 
 export default defineConfig({
   sula: {
@@ -29,7 +26,7 @@ export default defineConfig({
     default: 'zh-CN',
     antd: true,
     // default true, when it is true, will use `navigator.language` overwrite default
-    baseNavigator: true,
+    baseNavigator: false,
   },
   dynamicImport: {
     loading: '@ant-design/pro-layout/es/PageLoading',
@@ -46,7 +43,6 @@ export default defineConfig({
   esbuild: {},
   title: false,
   ignoreMomentLocale: true,
-  proxy: proxy[REACT_APP_ENV || 'dev'],
   manifest: {
     basePath: '/',
   },
@@ -65,4 +61,5 @@ export default defineConfig({
     exclude: [],
   },
   exportStatic: {},
+  mock: false,
 });

@@ -3,8 +3,8 @@ import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
 import { notification } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
-import Footer from '@/components/Footer';
 import type { ResponseError } from 'umi-request';
+import Footer from '@/components/Footer';
 import KeepAliveTabs from '@/components/KeepAlive/tabs';
 import defaultSettings from '../config/defaultSettings';
 

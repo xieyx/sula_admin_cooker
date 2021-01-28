@@ -4,7 +4,7 @@ import { DefaultFooter } from '@ant-design/pro-layout';
 
 export default () => (
   <DefaultFooter
-    copyright="2020 蚂蚁集团体验技术部出品"
+    copyright="2021 coolhub.com"
     links={[
       {
         key: 'Ant Design Pro',
@@ -15,13 +15,13 @@ export default () => (
       {
         key: 'github',
         title: <GithubOutlined />,
-        href: 'https://github.com/ant-design/ant-design-pro',
+        href: 'https://github.com/xieyx/admin-cooker',
         blankTarget: true,
       },
       {
-        key: 'Ant Design',
-        title: 'Ant Design',
-        href: 'https://ant.design',
+        key: 'Sula',
+        title: 'Sula',
+        href: 'https://github.com/umijs/sula',
         blankTarget: true,
       },
     ]}
