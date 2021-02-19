@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { Select, Spin } from 'antd';
 import { request } from 'umi';
 import get from 'lodash/get';
@@ -12,44 +12,47 @@ const SelectSearch: React.FC<Record<string, any>> = ({
   source,
   ...props
 }) => {
-  const handleSearch = (e: string) => {
-    ctx?.form?.setFieldSource(props.id, { reload: false, options: undefined });
-    const { url, paramName, convertParams, converter, ...otherSource } = remoteSource;
-    const otherParams: any[] = [];
-    Object.keys(convertParams).map((param: string) => {
-      otherParams[param] = convertParams[param].replace(/#text#/, e);
-      return param;
-    });
-    request(url, {
-      ...otherSource,
-      params: {
-        ...otherSource?.params,
-        ...otherParams,
-      },
-    }).then((res: any) => {
-      const options = [];
-      let i = 0;
-      do {
-        const v = get(res?.data, converter.value.replace(/#i#/, i));
-        if (v === undefined) {
-          break;
-        }
-        options.push({
-          label: get(res?.data, converter.label.replace(/#i#/, i), v),
-          value: v,
-        });
-        // eslint-disable-next-line no-plusplus
-      } while (++i);
-      ctx?.form?.setFieldSource(props.id, { reload: false, options });
-    });
-  };
+  const handleSearch = useCallback(
+    (e: string) => {
+      ctx?.form?.setFieldSource(props.id, { reload: false, options: undefined });
+      const { url, paramName, convertParams, converter, ...otherSource } = remoteSource;
+      const otherParams: any[] = [];
+      Object.keys(convertParams).map((param: string) => {
+        otherParams[param] = convertParams[param].replace(/#text#/, e);
+        return param;
+      });
+      request(url, {
+        ...otherSource,
+        params: {
+          ...otherSource?.params,
+          ...otherParams,
+        },
+      }).then((res: any) => {
+        const options = [];
+        let i = 0;
+        do {
+          const v = get(res?.data, converter.value.replace(/#i#/, i));
+          if (v === undefined) {
+            break;
+          }
+          options.push({
+            label: get(res?.data, converter.label.replace(/#i#/, i), v),
+            value: v,
+          });
+          // eslint-disable-next-line no-plusplus
+        } while (++i);
+        ctx?.form?.setFieldSource(props.id, { reload: false, options });
+      });
+    },
+    [ctx?.form, props.id, remoteSource],
+  );
 
   useEffect(() => {
     if (remoteSource === undefined || source?.reload === false) {
       return;
     }
     handleSearch('');
-  }, [source]);
+  }, [source?.reload, remoteSource, handleSearch]);
 
   const handleChange = (e: any) => {
     if (onChange) {

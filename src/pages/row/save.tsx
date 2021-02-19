@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { history, useActivate } from 'umi';
+import { history, useActivate, useLocation } from 'umi';
 import { Form } from 'sula';
 import { PageHeader, Card } from 'antd';
+import useBreadcrumb from '@/components/Breadcrumb';
 import type { FormItemProps } from '@/components/Drawer/Form.d';
-import withKeepAlive from '@/components/KeepAlive';
+// import withKeepAlive from '@/components/KeepAlive';
+import ShowResult from '@/components/Drawer/ShowResult';
 import { getForm } from './services';
 
-const RowSave: React.FC<{ location: any }> = ({ location }) => {
+const RowSave: React.FC<{ match: any }> = ({ match }) => {
+  const location: any = useLocation();
   const { query } = location;
-  const formRef = React.createRef<any>();
   const [list, setList] = useState<FormItemProps[]>([]);
   const [refreshForm, setRefreshForm] = useState<boolean>(true);
+  const [results, setResults] = useState<any[]>();
+  const breadcrumb = useBreadcrumb(match);
 
   useActivate(() => {
     setRefreshForm(true);
@@ -46,24 +50,33 @@ const RowSave: React.FC<{ location: any }> = ({ location }) => {
   }, [query, refreshForm]);
 
   const onFinish = (values: any) => {
-    // mapValues(values, (value, key) => {
-    //   console.log(value, typeof value)
-    //   return value
-    // })
     // eslint-disable-next-line no-console
     console.log('Received values of form: ', values);
+    setResults(
+      Object.keys(values).reduce(
+        (ret: any[], field: string) => [
+          ...ret,
+          {
+            label: field,
+            content: values[field]?.toLocaleString() || '',
+          },
+        ],
+        [],
+      ),
+    );
   };
 
   return (
     <PageHeader
-      title="title"
+      title="表单"
       className="site-page-header"
-      subTitle="sub title"
+      subTitle="查看"
+      breadcrumb={breadcrumb}
       onBack={() => history.goBack()}
     >
       <Card bordered={false}>
+        <ShowResult title="结果" items={results} />
         <Form
-          ref={formRef}
           mode="create"
           fields={list.map((field: FormItemProps) => ({
             field: {
@@ -112,4 +125,5 @@ const RowSave: React.FC<{ location: any }> = ({ location }) => {
   );
 };
 
-export default withKeepAlive(RowSave);
+// export default withKeepAlive(RowSave);
+export default RowSave;

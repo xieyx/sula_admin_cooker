@@ -21,7 +21,7 @@ const KeepAliveTabs: React.FC<{ tabBarExtraContent?: React.ReactNode }> = ({
         )
         ?.pop()?.name,
     );
-  }, [cachingNodes]);
+  }, [cachingNodes, location.pathname, location.search]);
 
   const handleTabClick = (key: string, event: any) => {
     event.preventDefault();

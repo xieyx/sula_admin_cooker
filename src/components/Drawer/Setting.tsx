@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Form } from 'sula';
-import pickBy from 'lodash/pickBy';
+import { useModel } from 'umi';
 import { CloseOutlined, DeleteOutlined, CopyOutlined } from '@ant-design/icons';
+import pick from 'lodash/pick';
+import pickBy from 'lodash/pickBy';
 import type { FormItemProps } from './Form.d';
 import ComponentProps from './ComponentProps';
 import HelpButton from '../HelpButton';
+
+export declare type TabType = 'form' | 'basic' | 'field' | 'pro';
 
 const propsReduce = (props: any) => {
   return Object.keys(props).reduce((values: any, prop: string) => {
@@ -30,14 +34,13 @@ const propsReduce = (props: any) => {
   }, {});
 };
 
-const getUpdatedSetting = (currentFieldSetting?: FormItemProps, fieldId?: number) => {
+const getUpdatedSetting = (currentFieldSetting?: FormItemProps) => {
   let fieldProps;
   let formItemProps;
+  // console.log(currentFieldSetting)
   if (currentFieldSetting) {
     const { field, name, label, valuePropName, initialSource, type, id, ...other } =
-      currentFieldSetting.filter((row: any) => {
-        return row.id === fieldId;
-      })[0] || {};
+      currentFieldSetting || {};
     if (field === undefined || typeof field === 'string') {
       fieldProps = {};
     } else {
@@ -49,74 +52,52 @@ const getUpdatedSetting = (currentFieldSetting?: FormItemProps, fieldId?: number
   return [fieldProps, formItemProps];
 };
 
-export type SettingProps = {
-  id?: number;
-  componentName?: string;
-  componentChildren?: React.ReactNode;
-  setVisible?: () => void;
-  updateSetting?: (values: any) => void;
-  setDeletedField?: (id: number) => void;
-  openCode?: (visible: boolean) => void;
-  [propName: string]: any;
-};
-
-export declare type TabType = 'form' | 'basic' | 'field' | 'pro';
-
-const filterByKey = (raw: any, allowed: string[]) =>
-  Object.keys(raw)
-    .filter((key) => allowed.includes(key))
-    .reduce((obj, key) => {
-      // eslint-disable-next-line no-param-reassign
-      obj[key] = raw[key];
-      return obj;
-    }, {});
-
-const Setting: React.FC<SettingProps> = ({
-  id,
-  type,
-  alias,
-  onFinish,
-  setVisible,
-  updateSetting,
-  setDeletedField,
-  setCopiedField,
-  openCode,
-  currentFieldSetting,
-}) => {
+const Setting: React.FC = () => {
+  const {
+    // currentFieldSetting,
+    currentField,
+    settingTrigger,
+    updateSetting,
+    deleteField,
+    copyField,
+    codeTrigger,
+    prevQueue,
+    editor,
+    code,
+  } = useModel('form');
   const [tab, setTab] = useState<TabType>('basic');
-  const formRef = React.createRef<any>();
-
-  const componentType = alias || type;
-
-  const defaultBasic: any = propsReduce(ComponentProps['Form.Item']);
-  const defaultProps: any = propsReduce(ComponentProps[componentType] || {});
+  const formRef = useRef<any>();
+  const currentFieldSetting = useMemo(() => {
+    return prevQueue.length > 0
+      ? prevQueue[prevQueue.length - 1].filter((r) => r.id === currentField)[0]
+      : undefined;
+  }, [prevQueue, currentField]);
+  const componentType = currentFieldSetting?.alias || currentFieldSetting?.type;
 
   useEffect(() => {
+    if (formRef?.current === undefined || formRef.current === null) {
+      return;
+    }
+    const defaultBasic: any = propsReduce(ComponentProps['Form.Item']);
+    const defaultProps: any = propsReduce(ComponentProps[componentType] || {});
+    const [updatedFieldProps, updatedFormItemProps] = getUpdatedSetting(currentFieldSetting);
+    formRef.current.resetFields();
+    formRef.current.setFieldsValue({
+      'Form.Item': pickBy({ ...defaultBasic, ...updatedFormItemProps }, (value) => {
+        return value !== undefined && value !== null;
+      }),
+      [componentType]: pickBy({ ...defaultProps, ...updatedFieldProps }, (value) => {
+        return value !== undefined && value !== null;
+      }),
+    });
+  }, [componentType, currentFieldSetting]);
+
+  useEffect(() => {
+    if (formRef?.current === undefined || formRef.current === null) {
+      return;
+    }
     setTab('basic');
-    formRef.current.resetFields();
-    const [updatedFieldProps, updatedFormItemProps] = getUpdatedSetting(currentFieldSetting, id);
-    formRef.current.setFieldsValue({
-      'Form.Item': pickBy({ ...defaultBasic, ...updatedFormItemProps }, (value: any) => {
-        return value !== undefined && value !== null;
-      }),
-      [componentType]: pickBy({ ...defaultProps, ...updatedFieldProps }, (value: any) => {
-        return value !== undefined && value !== null;
-      }),
-    });
-  }, [id]);
-
-  useEffect(() => {
-    formRef.current.resetFields();
-    const [updatedFieldProps, updatedFormItemProps] = getUpdatedSetting(currentFieldSetting, id);
-    formRef.current.setFieldsValue({
-      'Form.Item': pickBy({ ...defaultBasic, ...updatedFormItemProps }, (value: any) => {
-        return value !== undefined && value !== null;
-      }),
-      [componentType]: pickBy({ ...defaultProps, ...updatedFieldProps }, (value: any) => {
-        return value !== undefined && value !== null;
-      }),
-    });
-  }, [currentFieldSetting]);
+  }, [componentType]);
 
   const fieldsParse = (fieldProps: any, fieldType: string) =>
     Object.keys(fieldProps)
@@ -154,18 +135,9 @@ const Setting: React.FC<SettingProps> = ({
             };
             elseProps = {
               trigger: 'onBlur',
-              // onChange: (e: any) => {
-              //   console.log(e)
-              //   // formRef.current.setFieldValue([fieldType, prop], e.target.value);
-              // },
-              // onBlur: (e: any) => {
-              //   console.log(e)
-              //   formRef.current.setFieldValue([fieldType, prop], e.target.value);
-              // },
             };
             break;
           case 'boolean':
-            // field = {type: 'switch', props: {defaultChecked: true}};
             field = {
               type: 'switch',
               props: {
@@ -215,18 +187,6 @@ const Setting: React.FC<SettingProps> = ({
                   ],
                 },
               };
-              // elseProps = {
-              //   initialSource: [
-              //     { value: '', text: `--请选择 ${prop}--` },
-              //     ...fieldProps[prop][1].split(/\s*\|\s*/).map((item: string) => {
-              //       const newItem = item.replace(/(['"`])([^'"`]+)\1/, '$2').trim();
-              //       return {
-              //         value: newItem,
-              //         text: newItem,
-              //       };
-              //     }),
-              //   ],
-              // };
             } else {
               field = undefined;
               elseProps = {
@@ -236,8 +196,59 @@ const Setting: React.FC<SettingProps> = ({
                     children: '在代码中编辑',
                     onClick: (event: any) => {
                       event.preventDefault();
-                      if (openCode) {
-                        openCode(true);
+                      // codeTrigger(prop, currentFieldSetting?.id);
+                      codeTrigger();
+                      if (editor !== undefined) {
+                        editor.getAction('editor.action.formatDocument').run();
+                        let startLineNumber;
+                        const startColumn = 17;
+                        let endLineNumber;
+                        const endColumn = 17;
+                        let flag = false;
+                        code?.split(/[\r\n]/)?.map((row: string, i: number) => {
+                          const [k, v] = row.split(':');
+                          if (
+                            k.trim() === '"props"' &&
+                            v.trim().indexOf('{') === 0 &&
+                            flag === false
+                          ) {
+                            startLineNumber = i + 1;
+                            endLineNumber = i + 1;
+                          }
+                          if (
+                            k.trim() === '"id"' &&
+                            v.trim() === currentFieldSetting?.id?.toString()
+                          ) {
+                            flag = true;
+                          }
+                          return row;
+                        });
+                        if (startLineNumber === undefined || endLineNumber === undefined) {
+                          return;
+                        }
+                        editor.executeEdits('insert-code', [
+                          {
+                            range: {
+                              startLineNumber,
+                              startColumn,
+                              endLineNumber,
+                              endColumn,
+                            },
+                            text: `"${prop}": ,`,
+                          },
+                        ]);
+                        editor.setSelection({
+                          // selectionStartLineNumber: startLineNumber,
+                          // selectionStartColumn: startColumn,
+                          // positionLineNumber: endLineNumber,
+                          // positionColumn: endColumn,
+                          startLineNumber,
+                          startColumn,
+                          endLineNumber,
+                          endColumn: endColumn + prop.length + 5,
+                        });
+                        editor.getAction('editor.action.formatDocument').run();
+                        editor.focus();
                       }
                     },
                   },
@@ -267,10 +278,10 @@ const Setting: React.FC<SettingProps> = ({
   const contentList = {
     basic: [
       ...fieldsParse(
-        filterByKey(ComponentProps['Form.Item'], ['name', 'label', 'initialValue', 'hidden']),
+        pick(ComponentProps['Form.Item'], ['name', 'label', 'initialValue', 'hidden']),
         'Form.Item',
       ),
-      ...fieldsParse(filterByKey(fieldProps, ['disabled']), componentType),
+      ...fieldsParse(pick(fieldProps, ['disabled']), componentType),
     ],
     field: fieldsParse(fieldProps, componentType),
     form: fieldsParse(ComponentProps['Form.Item'], 'Form.Item'),
@@ -286,8 +297,8 @@ const Setting: React.FC<SettingProps> = ({
             icon: <CopyOutlined />,
             onClick: (event: any) => {
               event.preventDefault();
-              if (setCopiedField && id) {
-                setCopiedField(id);
+              if (currentFieldSetting?.id) {
+                copyField(currentFieldSetting.id);
               }
             },
           },
@@ -304,8 +315,8 @@ const Setting: React.FC<SettingProps> = ({
             icon: <DeleteOutlined />,
             onClick: (event: any) => {
               event.preventDefault();
-              if (setDeletedField && id) {
-                setDeletedField(id);
+              if (currentFieldSetting?.id) {
+                deleteField(currentFieldSetting.id);
               }
             },
           },
@@ -313,13 +324,11 @@ const Setting: React.FC<SettingProps> = ({
       },
     ],
   };
-  return (
+  return currentFieldSetting ? (
     <Form
       ref={formRef}
       onValuesChange={(changedValues: any) => {
-        if (updateSetting) {
-          updateSetting(changedValues);
-        }
+        updateSetting(changedValues);
       }}
       fields={contentList[tab]}
       container={{
@@ -338,9 +347,7 @@ const Setting: React.FC<SettingProps> = ({
             <CloseOutlined
               onClick={(event) => {
                 event.preventDefault();
-                if (setVisible) {
-                  setVisible();
-                }
+                settingTrigger();
               }}
             />
           ),
@@ -349,33 +356,9 @@ const Setting: React.FC<SettingProps> = ({
           },
         },
       }}
-      // actionsRender={[{
-      //   type: 'button',
-      //   props: {
-      //     children: '确定',
-      //     type: 'primary'
-      //   },
-      //   action: [
-      //     (ctx: any) => {
-      //       ctx.form.submit()
-      //     },
-      //   ]
-      // }, {
-      //   type: 'button',
-      //   props: {
-      //     children: '取消',
-      //   },
-      //   action: [
-      //     (ctx: any) => {
-      //       // ctx.form.submit()
-      //       console.log(1)
-      //     },
-      //   ]
-      // }]}
-      onFinish={onFinish}
       layout="vertical"
     />
-  );
+  ) : null;
 };
 
 export default Setting;

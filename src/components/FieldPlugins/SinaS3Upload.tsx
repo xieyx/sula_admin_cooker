@@ -59,7 +59,7 @@ const SinaS3Upload: React.FC<Record<string, any>> = ({
     if (list === undefined && fileList) {
       setList(fileList);
     }
-  }, [fileList]);
+  }, [list, fileList]);
 
   // const transformFile = (file: any) => {
   //   const suffix = file.name.slice(file.name.lastIndexOf('.'));

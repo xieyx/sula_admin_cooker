@@ -27,13 +27,6 @@ export type FormProps = {
 export type DrawerFormProps = {
   sortable?: boolean;
   sortableProps?: Omit<ReactSortableProps, 'list' | 'setList'>;
-  settingTrigger?: (field) => void;
-  // codeView?: (fields) => void;
-  changedFieldSetting?: any;
-  allFieldSetting?: FormItemProps[];
-  deletedField?: number;
-  copiedField?: number;
-  setHistory?: (list: FormItemProps[]) => void;
 } & Partial<SFormProps>;
 
 export type CustomComponentProps = {
@@ -208,30 +201,13 @@ export const CustomComponentsDefault: CustomComponentProps[] = [
       type: 'SinaS3Upload',
       props: {
         action: '/v1/upload/upload',
-        // listType: 'picture-card',
-        // showUploadList: false,
         slice: -1,
-        data: {
-          // dir: 'jrdev',
-        },
+        data: {},
       },
     },
     name: '点击上传',
     valuePropName: 'fileList',
   },
-  // {
-  //   type: 'Slider',
-  //   field: {
-  //     type: 'slider',
-  //     props: {
-  //       dots: true,
-  //       step: 1,
-  //       min: 0,
-  //       max: 10,
-  //     },
-  //   },
-  //   name: '滑动输入条',
-  // },
   {
     type: 'Rate',
     field: 'rate',

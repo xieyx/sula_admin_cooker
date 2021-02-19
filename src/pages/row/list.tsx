@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { useActivate, history } from 'umi';
+import { history } from 'umi';
 import { PageHeader, Button, Space, Table, Popconfirm, notification } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
-import withKeepAlive from '@/components/KeepAlive';
+import useBreadcrumb from '@/components/Breadcrumb';
 import { getAllForm, removeForm } from './services';
 import styles from './list.less';
 
-const RowList: React.FC = () => {
-  const [config, setConfig] = useState<any>();
+const RowList: React.FC<{ match: any }> = ({ match }) => {
+  const [list, setList] = useState<any[]>();
   const [refreshTable, setRefreshTable] = useState<boolean>(true);
+  const breadcrumb = useBreadcrumb(match);
   // const tableRef = React.createRef<any>();
 
-  useActivate(() => {
-    setRefreshTable(true);
-  });
+  // useActivate(() => {
+  //   setRefreshTable(true);
+  // });
 
   useEffect(() => {
     if (refreshTable === false) {
@@ -21,11 +22,39 @@ const RowList: React.FC = () => {
     }
 
     (async () => {
-      const list = await getAllForm();
-      setConfig({
-        rowKey: 'id',
-        dataSource: list.data,
-        columns: [
+      const res = await getAllForm();
+      setList(res?.data);
+
+      setRefreshTable(false);
+    })();
+  }, [refreshTable]);
+
+  return (
+    <PageHeader
+      title="列表"
+      className="site-page-header"
+      breadcrumb={breadcrumb}
+      extra={[
+        <Button
+          type="primary"
+          icon={<PlusCircleOutlined />}
+          key="1"
+          onClick={(event) => {
+            event.preventDefault();
+            history.push('/list/create');
+          }}
+        >
+          添加
+        </Button>,
+      ]}
+    >
+      <Table
+        loading={refreshTable}
+        scroll={{ x: true }}
+        className={styles.list}
+        rowKey="id"
+        dataSource={list}
+        columns={[
           {
             key: 'id',
             title: 'ID',
@@ -79,34 +108,10 @@ const RowList: React.FC = () => {
               </Space>
             ),
           },
-        ],
-      });
-
-      setRefreshTable(false);
-    })();
-  }, [refreshTable]);
-
-  return (
-    <PageHeader
-      title="列表"
-      className="site-page-header"
-      extra={[
-        <Button
-          type="primary"
-          icon={<PlusCircleOutlined />}
-          key="1"
-          onClick={(event) => {
-            event.preventDefault();
-            history.push('/list/create');
-          }}
-        >
-          添加
-        </Button>,
-      ]}
-    >
-      <Table loading={refreshTable} scroll={{ x: true }} className={styles.list} {...config} />
+        ]}
+      />
     </PageHeader>
   );
 };
 
-export default withKeepAlive(RowList);
+export default RowList;

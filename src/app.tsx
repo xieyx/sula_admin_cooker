@@ -5,7 +5,7 @@ import { notification } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import type { ResponseError } from 'umi-request';
 import Footer from '@/components/Footer';
-import KeepAliveTabs from '@/components/KeepAlive/tabs';
+// import KeepAliveTabs from '@/components/KeepAlive/tabs';
 import defaultSettings from '../config/defaultSettings';
 
 /**
@@ -27,7 +27,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
     // rightContentRender: () => <RightContent />,
     disableContentMargin: false,
-    headerRender: () => <KeepAliveTabs />,
+    // headerRender: () => <KeepAliveTabs />,
     footerRender: () => <Footer />,
     menuHeaderRender: undefined,
     // 自定义 403 页面
