@@ -5,7 +5,7 @@ import type { FormProps, CustomComponentProps } from './Form.d';
 import { dragDefs, CustomComponentsDefault } from './Form.d';
 
 const Components: React.FC<FormProps> = ({ sortableProps }) => {
-  const [conponents, setComponents] = useState<CustomComponentProps[]>([]);
+  const [components, setComponents] = useState<CustomComponentProps[]>([]);
 
   const setFilterTypes = (newState: CustomComponentProps[], sortable: Sortable | null = null) => {
     setComponents(sortable === null ? dragDefs(newState) : newState);
@@ -18,7 +18,7 @@ const Components: React.FC<FormProps> = ({ sortableProps }) => {
   return (
     <>
       <Form
-        fields={conponents.map((field) => ({
+        fields={components.map((field) => ({
           field: field.field,
           name: `${field.type}_${field.id}`,
           label: field.name,
@@ -28,7 +28,7 @@ const Components: React.FC<FormProps> = ({ sortableProps }) => {
         container={{
           type: 'ReactSortable',
           props: {
-            list: conponents,
+            list: components,
             setList: setFilterTypes,
             ...sortableProps,
           },
