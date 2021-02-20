@@ -15,6 +15,7 @@ const FormBuilder: React.FC<{ match: any }> = ({ match }) => {
 
   useEffect(() => {
     if (id === undefined) {
+      setInitialState([]);
       return;
     }
     (async () => {
@@ -31,7 +32,7 @@ const FormBuilder: React.FC<{ match: any }> = ({ match }) => {
     event.preventDefault();
     (async () => {
       const response = await saveForm({
-        id: id || createId().toLocaleString(),
+        id: id || createId().toString(),
         fields: JSON.stringify(prevQueue[prevQueue.length - 1]),
       });
       if (response && response.errorCode === 0) {
