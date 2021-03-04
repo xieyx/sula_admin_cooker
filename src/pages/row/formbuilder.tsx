@@ -7,15 +7,15 @@ import { createId } from '@/components/Drawer/Form.d';
 import { getForm, saveForm } from './services';
 
 const FormBuilder: React.FC<{ match: any }> = ({ match }) => {
-  const { prevQueue, setInitialState } = useModel('form');
+  const { queue, current, setInitialState } = useModel('form');
   const breadcrumb = useBreadcrumb(match);
   const location: any = useLocation();
   const { query } = location;
   const { id } = query;
 
   useEffect(() => {
+    setInitialState([]);
     if (id === undefined) {
-      setInitialState([]);
       return;
     }
     (async () => {
@@ -33,7 +33,7 @@ const FormBuilder: React.FC<{ match: any }> = ({ match }) => {
     (async () => {
       const response = await saveForm({
         id: id || createId().toString(),
-        fields: JSON.stringify(prevQueue[prevQueue.length - 1]),
+        fields: JSON.stringify(queue[current]),
       });
       if (response && response.errorCode === 0) {
         notification.success({

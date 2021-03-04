@@ -61,17 +61,16 @@ const Setting: React.FC = () => {
     deleteField,
     copyField,
     codeTrigger,
-    prevQueue,
-    editor,
     code,
+    editor,
+    queue,
+    current,
   } = useModel('form');
   const [tab, setTab] = useState<TabType>('basic');
   const formRef = useRef<any>();
   const currentFieldSetting = useMemo(() => {
-    return prevQueue.length > 0
-      ? prevQueue[prevQueue.length - 1].filter((r) => r.id === currentField)[0]
-      : undefined;
-  }, [prevQueue, currentField]);
+    return queue[current]?.filter((r) => r.id === currentField)[0];
+  }, [queue, current, currentField]);
   const componentType = currentFieldSetting?.alias || currentFieldSetting?.type;
 
   useEffect(() => {
@@ -97,7 +96,7 @@ const Setting: React.FC = () => {
       return;
     }
     setTab('basic');
-  }, [componentType]);
+  }, [currentField]);
 
   const fieldsParse = (fieldProps: any, fieldType: string) =>
     Object.keys(fieldProps)
@@ -198,7 +197,7 @@ const Setting: React.FC = () => {
                       event.preventDefault();
                       // codeTrigger(prop, currentFieldSetting?.id);
                       codeTrigger();
-                      if (editor !== undefined) {
+                      if (editor) {
                         editor.getAction('editor.action.formatDocument').run();
                         let startLineNumber;
                         const startColumn = 17;

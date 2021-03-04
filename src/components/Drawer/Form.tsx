@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useModel } from 'umi';
 import { Form as SForm } from 'sula';
-import type { FormItemProps, DrawerFormProps } from './Form.d';
+// import Sortable, { Swap } from "sortablejs";
+import type { DrawerFormProps } from './Form.d';
 import ShowResult from './ShowResult';
+
+// Sortable.mount(new Swap());
 
 const Form: React.FC<DrawerFormProps> = ({ sortable, sortableProps }) => {
   const formRef = useRef<any>();
-  const { currentField, settingTrigger, mode, formFields, setFormFields } = useModel('form');
+  const { currentField, settingTrigger, mode, setFormFields, queue, current } = useModel('form');
   const [results, setResults] = useState<any[]>();
 
   useEffect(() => {
@@ -35,30 +38,21 @@ const Form: React.FC<DrawerFormProps> = ({ sortable, sortableProps }) => {
       <SForm
         ref={formRef}
         mode={mode}
-        fields={formFields.map((field: FormItemProps) => ({
-          field: {
-            ...(typeof field.field === 'string' ? { type: field.field } : field.field),
-            props: {
-              ...field.field.props,
-              ...field[field.type],
-            },
-          },
-          name: `${field.type}_${field.id}`,
-          label: field.name,
-          valuePropName: field.valuePropName,
-          initialSource: field.initialSource,
-          className: currentField === field.id ? 'sform-item-chosen' : undefined,
-          onClick:
-            sortable && mode === 'view'
-              ? (event: any) => {
-                  event.preventDefault();
-                  settingTrigger(field);
-                }
-              : undefined,
-          ...field['Form.Item'],
-        }))}
+        fields={
+          queue[current]?.map((field) => ({
+            ...field,
+            className: currentField === field.id ? 'sform-item-chosen' : undefined,
+            onClick:
+              sortable && mode === 'view'
+                ? (event: any) => {
+                    event.preventDefault();
+                    settingTrigger(field);
+                  }
+                : undefined,
+          })) || []
+        }
         actionsRender={
-          mode === 'edit' && formFields.length
+          mode === 'edit' && queue[current].length
             ? [
                 {
                   type: 'button',
@@ -81,8 +75,15 @@ const Form: React.FC<DrawerFormProps> = ({ sortable, sortableProps }) => {
             ? {
                 type: 'ReactSortable',
                 props: {
-                  list: formFields,
+                  list: queue[current] || [],
                   setList: setFormFields,
+                  onChoose: () => document.body.classList.add('dragging'), // Dragging started
+                  onStart: () => document.body.classList.add('dragging'), // Dragging started
+                  onUnchoose: () => document.body.classList.remove('dragging'), // Dragging ended
+                  onEnd: () => document.body.classList.remove('dragging'), // Dragging ended
+                  forceFallback: true,
+                  // fallbackTolerance: 0,
+                  // swap: true,
                   ...sortableProps,
                 },
               }

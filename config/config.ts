@@ -1,6 +1,5 @@
 // https://umijs.org/config/
 import { defineConfig } from 'umi';
-import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
 import defaultSettings from './defaultSettings';
 import routes from './routes';
 
@@ -48,14 +47,6 @@ export default defineConfig({
   },
   base: '/',
   publicPath: '/',
-  chainWebpack: (memo) => {
-    // 更多配置 https://github.com/Microsoft/monaco-editor-webpack-plugin#options
-    memo.plugin('monaco-editor-webpack-plugin').use(MonacoWebpackPlugin, [
-      // 按需配置
-      { languages: ['json'] },
-    ]);
-    return memo;
-  },
   nodeModulesTransform: {
     type: 'none',
     exclude: [],

@@ -51,6 +51,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.0.0",
     "@ant-design/pro-layout": "^6.9.0",
+    "@monaco-editor/react": "^4.0.11",
     "antd": "^4.10.2",
     "classnames": "^2.2.6",
     "lodash": "^4.17.11",
@@ -58,7 +59,6 @@
     "qs": "^6.9.0",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
-    "react-monaco-editor": "^0.42.0",
     "react-sortablejs": "^6.0.0",
     "sortablejs": "^1.10.2",
     "sula": "^1.0.0-beta.21",
@@ -87,7 +87,6 @@
     "gh-pages": "^3.0.0",
     "husky": "^4.2.5",
     "lint-staged": "^10.0.0",
-    "monaco-editor-webpack-plugin": "^3.0.0",
     "prettier": "^2.0.1",
     "prettier-plugin-style-order": "^0.2.2",
     "puppeteer-core": "^5.0.0",

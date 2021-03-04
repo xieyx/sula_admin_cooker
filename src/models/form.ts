@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 // import { message } from 'antd';
-import type * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
+import type { Sortable } from 'react-sortablejs';
+import slice from 'lodash/slice';
 import type { FormItemProps } from '@/components/Drawer/Form.d';
 import { createId } from '@/components/Drawer/Form.d';
 
@@ -9,14 +10,12 @@ export default () => {
   const [settingVisible, setSettingVisible] = useState<boolean>(false);
   const [codeVisible, setCodeVisible] = useState<boolean>(false);
   const [fullscreen, setFullscreen] = useState<boolean>(false);
-  // const [currentFieldSetting, setCurrentFieldSetting] = useState<FormItemProps>();
   const [currentField, setCurrentField] = useState<number>();
-  const [nextQueue, setNextQueue] = useState<FormItemProps[][]>([]);
-  const [prevQueue, setPrevQueue] = useState<FormItemProps[][]>([]);
   const [mode, setMode] = useState<'view' | 'create' | 'edit'>('view');
-  const [formFields, _setFormFields] = useState<FormItemProps[]>([]);
   const [code, setCode] = useState<string>();
-  const [editor, setEditor] = useState<monacoEditor.editor.IStandaloneCodeEditor>();
+  const [editor, setEditor] = useState<any>();
+  const [current, setCurrent] = useState<number>(-1);
+  const [queue, setQueue] = useState<FormItemProps[][]>([]);
 
   const setPreviewMode = () => {
     setMode('edit');
@@ -37,98 +36,52 @@ export default () => {
     }
   };
 
-  const formatFormFields = (fields: FormItemProps[]) => {
-    _setFormFields([
-      ...fields.map((row) => {
-        const { field, valuePropName, initialSource, type, id, ...other } = row;
-        return {
-          field,
-          valuePropName,
-          initialSource,
-          type,
-          id,
-          'Form.Item': other,
-        };
-      }),
-    ]);
-    setCode(JSON.stringify(fields, null, 2));
-  };
-
   const setInitialState = useCallback((fields: FormItemProps[]) => {
     setComponentVisible(true);
     setSettingVisible(false);
     setCodeVisible(false);
     setFullscreen(false);
     setCurrentField(undefined);
-    setNextQueue([]);
-    setPrevQueue([]);
     setMode('view');
-    formatFormFields(fields);
+    setCode(JSON.stringify(fields, null, 2));
+    setQueue([]);
+    setCurrent(-1);
   }, []);
 
   const setHistory = (list: FormItemProps[], flag?: boolean) => {
-    // console.log(prevQueue[prevQueue.length-1], list);
-    if (
-      prevQueue.length > 0 &&
-      JSON.stringify(prevQueue[prevQueue.length - 1]) === JSON.stringify(list)
-    ) {
+    if (queue.length > 0 && JSON.stringify(queue[current]) === JSON.stringify(list)) {
       return;
     }
+
+    setQueue([...slice(queue, 0, current + 1), list]);
+    setCurrent(current + 1);
+
     if (flag !== false) {
       setCode(JSON.stringify(list, null, 2));
     }
-    setPrevQueue([...prevQueue, list]);
   };
 
-  const setFormFields = (newState: FormItemProps[], flag?: boolean) => {
-    _setFormFields(newState);
-    const history = newState.map((field) => ({
-      field: {
-        ...(typeof field.field === 'string' ? { type: field.field } : field.field),
-        props: {
-          ...field.field.props,
-          ...field[field.type],
-        },
-      },
-      name: `${field.type}_${field.id}`,
-      label: field.name,
-      valuePropName: field.valuePropName,
-      initialSource: field.initialSource,
-      type: field.type,
-      id: field.id,
-      ...field['Form.Item'],
-    }));
-    setHistory(history, flag);
+  const setFormFields = (newState: FormItemProps[], sortable: Sortable | null = null) => {
+    setHistory(
+      newState.map(({ chosen, filtered, selected, ...field }) => field),
+      sortable !== null,
+    );
   };
 
   const doPrev = () => {
-    if (prevQueue === undefined || prevQueue.length <= 1) {
+    if (queue.length <= 1 || current <= 0) {
       return;
     }
-
-    const next = prevQueue.pop();
-    if (next === undefined) {
-      return;
-    }
-    if (prevQueue.length > 0) {
-      formatFormFields(prevQueue[prevQueue.length - 1]);
-    }
-    setPrevQueue([...prevQueue]);
-    setNextQueue([...nextQueue, next]);
+    setCurrent(current - 1);
+    setCode(JSON.stringify(queue[current - 1], null, 2));
   };
 
   const doNext = () => {
-    if (nextQueue === undefined || nextQueue.length === 0) {
+    if (queue.length <= 1 || queue.length <= current) {
       return;
     }
-
-    const prev = nextQueue.pop();
-    if (prev === undefined) {
-      return;
-    }
-    formatFormFields(prev);
-    setNextQueue([...nextQueue]);
-    setPrevQueue([...prevQueue, prev]);
+    setCurrent(current + 1);
+    setCode(JSON.stringify(queue[current + 1], null, 2));
   };
 
   const componentsTrigger = () => {
@@ -145,41 +98,7 @@ export default () => {
     }
   };
 
-  const codeTrigger = (insertCode?: string, id?: number) => {
-    if (insertCode !== undefined && id) {
-      // isjson
-      try {
-        if (code) {
-          setCode(
-            JSON.stringify(
-              JSON.parse(code).map((row: any) => {
-                if (row.id === id) {
-                  return {
-                    ...row,
-                    field: {
-                      ...row?.field,
-                      props: {
-                        ...row?.field?.props,
-                        [insertCode]: {},
-                      },
-                    },
-                  };
-                }
-
-                return row;
-              }),
-              null,
-              2,
-            ),
-          );
-        }
-      } catch {
-        // error
-      }
-      console.log(code, insertCode, id);
-      // setCode();
-    }
-
+  const codeTrigger = () => {
     if (codeVisible) {
       return;
     }
@@ -199,7 +118,6 @@ export default () => {
       setSettingVisible(false);
       return;
     }
-    // setCurrentFieldSetting(field);
     setCurrentField(field.id);
     if (settingVisible) {
       return;
@@ -208,20 +126,20 @@ export default () => {
   };
 
   const updateSetting = (value: any) => {
-    setFormFields([
-      ...formFields.map((row) => {
-        // if (row.id === currentFieldSetting.id) {
+    // console.log(value);
+    setHistory([
+      ...queue[current]?.map((row) => {
         if (row.id === currentField) {
           return {
             ...row,
-            [row.type]: {
-              ...row[row.type],
-              ...value[row.type],
+            field: {
+              ...row.field,
+              props: {
+                ...row.field.props,
+                ...value[row.type],
+              },
             },
-            'Form.Item': {
-              ...row['Form.Item'],
-              ...value['Form.Item'],
-            },
+            ...value['Form.Item'],
           };
         }
 
@@ -231,15 +149,15 @@ export default () => {
   };
 
   const deleteField = (id: any) => {
-    setFormFields([...formFields.filter((row) => row.id !== id)]);
+    setHistory([...queue[current]?.filter((row) => row.id !== id)]);
     settingTrigger();
   };
 
   const copyField = (id: any) => {
-    setFormFields([
-      ...formFields,
-      ...formFields
-        .filter((row) => {
+    setHistory([
+      ...queue[current],
+      ...queue[current]
+        ?.filter((row) => {
           return row.id === id;
         })
         .map((row) => {
@@ -247,10 +165,7 @@ export default () => {
           return {
             ...row,
             id: newid,
-            'Form.Item': {
-              ...row['Form.Item'],
-              name: `${row.type}_${newid}`,
-            },
+            name: `${row.type}_${newid}`,
           };
         }),
     ]);
@@ -261,23 +176,9 @@ export default () => {
     if (value === undefined) {
       return;
     }
+
     try {
-      setFormFields(
-        [
-          ...JSON.parse(value).map((row: any) => {
-            const { field, valuePropName, initialSource, type, id, ...other } = row;
-            return {
-              field,
-              valuePropName,
-              initialSource,
-              type,
-              id,
-              'Form.Item': other,
-            };
-          }),
-        ],
-        false,
-      );
+      setHistory(JSON.parse(value), false);
       // message.success('配置已生效');
     } catch {
       // message.error('格式错误');
@@ -285,22 +186,17 @@ export default () => {
   };
 
   return {
-    formFields,
     code,
     componentVisible,
     settingVisible,
     codeVisible,
     fullscreen,
     currentField,
-    nextQueue,
-    prevQueue,
     mode,
     setComponentVisible,
     setSettingVisible,
     setCodeVisible,
     setFullscreen,
-    setNextQueue,
-    setPrevQueue,
     setMode,
     setHistory,
     codeTrigger,
@@ -315,10 +211,11 @@ export default () => {
     deleteField,
     copyField,
     codeConfirm,
-    formatFormFields,
     setInitialState,
     componentsTrigger,
     editor,
     setEditor,
+    current,
+    queue,
   };
 };

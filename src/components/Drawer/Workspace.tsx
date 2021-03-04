@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useModel } from 'umi';
 import { Space, Divider, Layout, Menu, Tooltip, Button } from 'antd';
 import {
@@ -10,13 +10,14 @@ import {
   FullscreenExitOutlined,
   RollbackOutlined,
 } from '@ant-design/icons';
-import MonacoEditor from 'react-monaco-editor';
-import allSuggestions from './Suggestions';
+import Editor, { loader } from '@monaco-editor/react';
 import { createId } from './Form.d';
 import Components from './Components';
 import Form from './Form';
 import Setting from './Setting';
 import styles from './Workspace.less';
+
+loader.config({ 'vs/nls': { availableLanguages: { '*': 'zh-cn' } } });
 
 export type WorkspaceProps = {
   saveHandle: (event: React.MouseEvent) => void;
@@ -30,8 +31,6 @@ const Workspace: React.FC<WorkspaceProps> = ({ saveHandle }) => {
     doNext,
     code,
     setCode,
-    nextQueue,
-    prevQueue,
     mode,
     codeVisible,
     componentVisible,
@@ -42,9 +41,9 @@ const Workspace: React.FC<WorkspaceProps> = ({ saveHandle }) => {
     codeTrigger,
     componentsTrigger,
     setEditor,
+    queue,
+    current,
   } = useModel('form');
-
-  const [handle, setHandle] = useState<NodeJS.Timeout | null>(null);
 
   const handleMenu = (event: any) => {
     switch (event.key) {
@@ -86,7 +85,7 @@ const Workspace: React.FC<WorkspaceProps> = ({ saveHandle }) => {
             </Tooltip>
             <Tooltip title="后退">
               <RollbackOutlined
-                className={prevQueue.length <= 1 ? styles.Disabled : undefined}
+                className={queue.length <= 1 || current <= 0 ? styles.Disabled : undefined}
                 onClick={(event) => {
                   event.preventDefault();
                   doPrev();
@@ -96,7 +95,9 @@ const Workspace: React.FC<WorkspaceProps> = ({ saveHandle }) => {
             <Tooltip title="前进">
               <RollbackOutlined
                 style={{ transform: 'rotateY(180deg)' }}
-                className={nextQueue.length === 0 ? styles.Disabled : undefined}
+                className={
+                  queue.length <= 1 || queue.length - 1 <= current ? styles.Disabled : undefined
+                }
                 onClick={(event) => {
                   event.preventDefault();
                   doNext();
@@ -159,7 +160,7 @@ const Workspace: React.FC<WorkspaceProps> = ({ saveHandle }) => {
           trigger={null}
           className={styles.Code}
         >
-          <MonacoEditor
+          <Editor
             width="100%"
             height="100%"
             language="json"
@@ -179,50 +180,18 @@ const Workspace: React.FC<WorkspaceProps> = ({ saveHandle }) => {
             }}
             value={code}
             onChange={(value) => {
-              setCode(value);
-              if (handle !== null) {
-                clearTimeout(handle);
+              if (value === undefined) {
+                return;
               }
-              setHandle(setTimeout(() => codeConfirm(value), 500));
+              setCode(value);
             }}
-            editorDidMount={(editor, monaco) => {
+            onValidate={(markers: any[]) => {
+              if (code !== undefined && !markers?.length) {
+                codeConfirm(code);
+              }
+            }}
+            onMount={(editor) => {
               setEditor(editor);
-              let suggestions: any[] = [];
-              let oldk: string = '';
-              editor.onDidChangeModelContent((e) => {
-                // console.log(e)
-                const editorModel = editor.getModel();
-                if (editorModel === null) {
-                  return;
-                }
-                const lineContent = editorModel.getLineContent(e.changes[0].range.startLineNumber);
-                const k = lineContent.replace(/\s*"([^"]+)".*$/, '$1');
-                if (k.length === 0 || k === oldk) {
-                  return;
-                }
-
-                oldk = k;
-                if (allSuggestions[k]) {
-                  suggestions = allSuggestions[k];
-                }
-              });
-              monaco.languages.registerCompletionItemProvider('json', {
-                provideCompletionItems: (model, position) => {
-                  return {
-                    suggestions: suggestions.map((item) => ({
-                      ...item,
-                      kind: monaco.languages.CompletionItemKind.Enum,
-                      range: {
-                        startLineNumber: position.lineNumber,
-                        startColumn: position.column,
-                        endLineNumber: position.lineNumber,
-                        endColumn: position.column,
-                      },
-                    })),
-                  };
-                },
-                triggerCharacters: ['"'],
-              });
             }}
           />
         </Layout.Sider>

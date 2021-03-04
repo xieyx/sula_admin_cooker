@@ -6,6 +6,14 @@ body,
   height: 100%;
 }
 
+.dragging * {
+  cursor: move !important;
+}
+
+.dragging .ant-form-item:not(.sform-item-chosen) {
+  border-color: transparent !important;
+}
+
 .colorWeak {
   filter: invert(80%);
 }
