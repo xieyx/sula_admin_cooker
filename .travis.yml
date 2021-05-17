@@ -1,0 +1,18 @@
+
+os: linux
+language: node_js
+node_js:
+  - lts/*
+cache: npm
+install:
+  - yarn install # npm ci
+script:
+  - yarn build
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: dist
+  token: $TRAVIS_CI
+  keep_history: true
+  on:
+    branch: master
